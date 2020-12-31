@@ -34,7 +34,7 @@ class MongoSettings(BaseSettings):
     min_connections: int
     max_connections: int
 
-    full_uri: Optional[int] = None
+    full_uri: Optional[str] = None
 
     class Config:
         env_prefix = "MONGO_"
