@@ -49,6 +49,10 @@ class GunicornSettings(BaseSettings):
     timeout: Optional[int] = 120
     keepalive: Optional[int] = 5
 
+    ssl_cert: Optional[str] = None
+    ssl_key: Optional[str] = None
+    ssl_chain: Optional[str] = None
+
     class Config:
         env_prefix = "GUNICORN_"
 

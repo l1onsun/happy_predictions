@@ -5,6 +5,7 @@ from app.config.dotenv import get_env
 
 gunicorn_env = get_env().gunicorn
 
+
 def count_workers():
     if gunicorn_env.web_concurrency:
         workers = gunicorn_env.web_concurrency
@@ -21,4 +22,8 @@ def count_workers():
 bind = f"{gunicorn_env.host}:{gunicorn_env.port}"
 workers = count_workers()
 timeout = gunicorn_env.timeout
-keepalive = gunicorn_env.keepalive # not a typo
+keepalive = gunicorn_env.keepalive  # not a typo
+
+keyfile = gunicorn_env.ssl_key
+certfile = gunicorn_env.ssl_cert
+ca_certs = gunicorn_env.ssl_chain
