@@ -18,6 +18,7 @@ devtools = {extras = ["pygments"], version = "*"}
 aiofiles = "*"
 img-gen = {git = "https://github.com/reet1304/img_gen"}
 gunicorn = "*"
+pydantic = "*"
 
 [dev-packages]
 pytest = "*"
