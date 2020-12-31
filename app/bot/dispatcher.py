@@ -16,6 +16,7 @@ from devtools import debug
 def error_handler(update, context: CallbackContext):
     debug("error handler:", update, context)
 
+
 def keyboard(text):
     keyboard = [
         [telegram.InlineKeyboardButton(text, callback_data='prediction')],
@@ -25,8 +26,8 @@ def keyboard(text):
     ]
     return telegram.InlineKeyboardMarkup(keyboard)
 
-def command_start(update: telegram.Update, context: CallbackContext):
 
+def command_start(update: telegram.Update, context: CallbackContext):
     update.effective_chat.send_photo("https://cs10.pikabu.ru/post_img/big/2018/08/02/9/1533224874120297049.jpg")
     update.effective_chat.send_message("Мяу... Хочешь получить предсказание на 2021 год?",
                                        reply_markup=keyboard("Получить предсказание!"))
@@ -39,10 +40,11 @@ def command_start(update: telegram.Update, context: CallbackContext):
 
 
 async def asycn_prediction_callback(update: telegram.Update, context: CallbackContext):
-    print("async start")
     user: telegram.User = update.callback_query.from_user
-
-    update.effective_chat.send_message(f"Предсказываю предсказание для {user.name}...")
+    effective_name = user.name
+    if effective_name[0] != '@':
+        effective_name = user.username
+    update.effective_chat.send_message(f"{user.name} готовы узнать что вас ждет в 2021 году? Моё предсказание")
 
     found_user = await crud.find_user(user.id)
     if found_user is not None:
@@ -53,8 +55,7 @@ async def asycn_prediction_callback(update: telegram.Update, context: CallbackCo
         await crud.new_user(user.id, index, background)
     update.effective_chat.send_photo(img)
     update.effective_chat.send_message("Кто ещё не получил своё предсказание на 2021 год?",
-                                       reply_markup = keyboard("Получить предсказание!"))
-    print("async end")
+                                       reply_markup=keyboard("Получить предсказание!"))
 
 
 def prediction_callback(update: telegram.Update, context: CallbackContext):
