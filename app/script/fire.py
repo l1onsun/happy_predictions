@@ -21,7 +21,8 @@ def gunicorn():
                     "-k", "uvicorn.workers.UvicornWorker", "-c", "app.config/gunicorn.py"])
 
 def deploy():
-    subprocess.run(["python", "-m", __file__, evn.fire_deploy])
+    for cmd in evn.fire_deploy.split():
+        subprocess.run(["python", "-m", "app.script.fire", cmd])
 
 if __name__ == '__main__':
     fire.Fire()
