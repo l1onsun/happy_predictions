@@ -51,7 +51,7 @@ async def asycn_prediction_callback(update: telegram.Update, context: CallbackCo
     else:
         index, background, img = predictions.get_random_prediction()
         await crud.new_user(user.id, index, background)
-    update.effective_chat.send_photo(img, reply_markup=keyboard("Кто ещё хочет узнать что будет у него в новом году?"))
+    update.effective_chat.send_photo(img, reply_markup=keyboard("Кто ещё хочет узнать\nчто будет у него\nв новом году?"))
     print("async end")
 
 
