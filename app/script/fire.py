@@ -16,6 +16,10 @@ def webhook_info():
 def uvicorn():
     subprocess.run(["uvicorn", "--reload", "app.server.asgi:app", "--port", "8080"])
 
+def gunicorn():
+    subprocess.run(["gunicorn", "app.server.asgi:app",
+                    "-k", "uvicorn.workers.UvicornWorker", "-c", "app.config/gunicorn.py"])
+
 def deploy():
     subprocess.run(["python", "-m", __file__, evn.fire_deploy])
 

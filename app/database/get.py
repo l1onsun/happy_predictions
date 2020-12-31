@@ -10,6 +10,8 @@ def get_db_client() -> AsyncIOMotorClient:
     connect_uri = "mongodb://{}:{}@{}:{}".format(env.mongo.user, env.mongo.password, env.mongo.host, env.mongo.port)
     if env.mongo.auth_db is not None:
         connect_uri += "/{}".format(env.mongo.auth_db)
+    if env.mongo.full_uri is not None:
+        connect_uri = env.mongo.full_uri
     return AsyncIOMotorClient(connect_uri,
                               maxPoolSize=env.mongo.max_connections,
                               minPoolSize=env.mongo.min_connections)

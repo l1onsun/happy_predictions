@@ -20,6 +20,10 @@ def get_env():
 # def get_telegram_env():
 #     return get_env().bot
 
+class AppSettings(BaseSettings):
+    host: Optional[str] = "localhost"
+    port: Optional[str] = "8080"
+
 class MongoSettings(BaseSettings):
     db: str
     user: str
@@ -29,6 +33,8 @@ class MongoSettings(BaseSettings):
     port: int
     min_connections: int
     max_connections: int
+
+    full_uri: Optional[int] = None
 
     class Config:
         env_prefix = "MONGO_"
