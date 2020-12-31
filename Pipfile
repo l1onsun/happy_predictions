@@ -17,6 +17,7 @@ uvicorn = {extras = ["standard"], version = "*"}
 devtools = {extras = ["pygments"], version = "*"}
 aiofiles = "*"
 img-gen = {git = "https://github.com/reet1304/img_gen"}
+gunicorn = "*"
 
 [dev-packages]
 pytest = "*"
