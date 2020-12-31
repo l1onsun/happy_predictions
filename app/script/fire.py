@@ -18,7 +18,7 @@ def uvicorn():
 
 def gunicorn():
     subprocess.run(["gunicorn", "app.server.asgi:app",
-                    "-k", "uvicorn.workers.UvicornWorker", "-c", "app.config/gunicorn.py"])
+                    "-k", "uvicorn.workers.UvicornWorker", "-c", "app.config.gunicorn.py"])
 
 def deploy():
     for cmd in evn.fire_deploy.split():
