@@ -44,7 +44,7 @@ async def asycn_prediction_callback(update: telegram.Update, context: CallbackCo
     effective_name = user.name
     # if effective_name[0] != '@':
     #     effective_name = user.username
-    update.effective_chat.send_message(f"{user.name}! Готовы узнать что вас ждет в 2021 году? Моё предсказание:")
+    update.effective_chat.send_message(f"{user.name}! Готовы узнать что вас ждет в 2021 году?\nМоё предсказание:")
 
     found_user = await crud.find_user(user.id)
     if found_user is not None:
