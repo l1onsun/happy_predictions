@@ -3,7 +3,6 @@ from datetime import datetime
 from typing import Literal
 
 
-
 # constants
 class SchemeConfig:
     collection_user = "tg_user"
@@ -17,4 +16,6 @@ class SchemeConfig:
 class DatabaseUser(BaseModel):
     id: int = Field(..., alias=SchemeConfig.collection_user_unique)
     prediction: int = Field(..., alias=SchemeConfig.collection_user_prediction_idx)
-    background: str = Field(..., alias=SchemeConfig.collection_user_prediction_background)
+    background: str = Field(
+        ..., alias=SchemeConfig.collection_user_prediction_background
+    )

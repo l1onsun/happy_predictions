@@ -1,0 +1,12 @@
+---
+version: '3.7'
+services:
+
+  web:
+    restart: unless-stopped
+#    image: ${CI_REGISTRY}/happy_predictions:latest
+    build:
+      context: .
+    ports:
+      - 8080:8080
+    env_file: .env

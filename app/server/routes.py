@@ -1,12 +1,9 @@
 from starlette.routing import Route, Request
-from starlette.responses import Response, FileResponse
+from starlette.responses import Response
 
-from app.config.dotenv import get_env
 from app.bot.dispatcher import get_dispatcher
+from app.const import WEBHOOK_ROUTE
 
-import img_gen
-
-env = get_env()
 dispatcher = get_dispatcher()
 
 
@@ -22,6 +19,6 @@ async def telegram_webhook(request: Request):
 
 
 routes = [
-    Route(env.telegram.webhook_route, telegram_webhook, methods=["POST"]),
-    Route('/', check_run),
+    Route(WEBHOOK_ROUTE, telegram_webhook, methods=["POST"]),
+    Route("/", check_run),
 ]
