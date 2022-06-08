@@ -5,3 +5,7 @@ motor
 pillow
 python-telegram-bot
 git+https://github.com/reet1304/img_gen@8dfe1d143fcb2bf991ad08efefa78c38b488baed#egg=img-gen
+python-dotenv
+fire
+pydantic
+devtools
