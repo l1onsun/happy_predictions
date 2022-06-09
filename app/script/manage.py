@@ -14,7 +14,7 @@ bot = telegram.Bot(token=evn.telegram_api_token)
 
 
 def set_webhook():
-    return bot.set_webhook(url=f"{evn.bot_host}:{PORT}{WEBHOOK_ROUTE}")
+    return bot.set_webhook(url=f"{evn.bot_host}{WEBHOOK_ROUTE}")
 
 
 def webhook_info():
@@ -22,7 +22,7 @@ def webhook_info():
 
 
 def uvicorn():
-    subprocess.run(["uvicorn", "--reload", "app.server.asgi:app", "--host", "0.0.0.0", "--port", f"{PORT}"])
+    subprocess.run(["uvicorn", "--reload", "app.server.asgi:app", "--host", "127.0.0.1", "--port", f"{PORT}"])
 
 
 def gunicorn():
