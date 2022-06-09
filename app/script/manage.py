@@ -22,7 +22,7 @@ def webhook_info():
 
 
 def uvicorn():
-    subprocess.run(["uvicorn", "--reload", "app.server.asgi:app", "--host", "0.0.0.0", "--port", "8443"])
+    subprocess.run(["uvicorn", "--reload", "app.server.asgi:app", "--host", "0.0.0.0", "--port", PORT])
 
 
 def gunicorn():
