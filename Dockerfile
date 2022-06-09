@@ -18,5 +18,5 @@ COPY --from=python-install /install /usr/local
 
 COPY app ./app
 
-CMD ["uvicorn", "app.server.asgi:app", "--host", "0.0.0.0", "--port", "8443"]
+CMD ["uvicorn", "app.server.asgi:app", "--host", "0.0.0.0", "--port", "8080"]
 
