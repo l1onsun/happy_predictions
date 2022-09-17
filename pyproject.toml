@@ -1,0 +1,21 @@
+[build-system]
+requires = ["whey"]
+build-backend = "whey"
+
+[project]
+name = "happy_predictions"
+version = "42"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "aiofiles",
+    "motor",
+    "pillow",
+    "python-telegram-bot==20.0.a4",
+
+    "pytest",
+    "pytest-asyncio",
+    "pip-tools",
+    "devtools",
+    "pre-commit",
+]
