@@ -3,8 +3,8 @@ from dataclasses import InitVar, dataclass
 import telegram.ext as tge
 
 from happy_predictions.service_provider.service_provider import ServiceProvider
-from happy_predictions.services.telegram.fix_telegram_types import Update
-from happy_predictions.services.telegram.provided_handlers import ProvidedHandlers
+from happy_predictions.telegram.fix_telegram_types import Update
+from happy_predictions.telegram.provided_handlers import ProvidedHandlers
 from happy_predictions.utils import JsonType
 
 

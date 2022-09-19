@@ -3,8 +3,7 @@ from typing import Optional
 
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 
-from happy_predictions.services.storage.models import DatabaseUser, SchemeConfig
-from happy_predictions.services.storage.storage import Storage
+from happy_predictions.storage.models import DatabaseUser, SchemeConfig
 
 
 @dataclass
@@ -35,6 +34,3 @@ class MongoStorage:
             }
         )
         await users.insert_one(user.dict(by_alias=True))
-
-
-assert issubclass(MongoStorage, Storage), "MongoStorage should implement Storage"

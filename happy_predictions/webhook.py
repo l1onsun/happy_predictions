@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Request
 
 from happy_predictions.const import TELEGRAM_WEBHOOK_PATH
 from happy_predictions.provide_depends import provide
-from happy_predictions.services.telegram.telegram_service import TelegramService
+from happy_predictions.telegram.telegram_service import TelegramService
 
 router = APIRouter()
 

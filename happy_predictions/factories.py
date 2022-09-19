@@ -2,15 +2,15 @@ from typing import NewType
 
 import telegram.ext as tge
 from fastapi import FastAPI
+from telegram import Bot
 
 from happy_predictions.const import TELEGRAM_WEBHOOK_PATH
 from happy_predictions.env import Env
 from happy_predictions.service_provider.service_factory import ServiceFactories
 from happy_predictions.service_provider.service_provider import ServiceProvider
-from happy_predictions.services.storage.mongo_storage.mongo_storage import MongoStorage
-from happy_predictions.services.storage.storage import Storage
-from happy_predictions.services.telegram.fix_telegram_types import Bot
-from happy_predictions.services.telegram.telegram_service import TelegramService
+from happy_predictions.storage.mongo_storage.mongo_storage import MongoStorage
+from happy_predictions.storage.storage import Storage
+from happy_predictions.telegram.telegram_service import TelegramService
 from happy_predictions.telegram_handlers import telegram_handlers
 from happy_predictions.utils import url_join
 from happy_predictions.webhook import router as telegram_webhook_router
@@ -30,7 +30,7 @@ def build_fastapi(
 
     app = FastAPI(on_startup=[on_startup])
     app.include_router(telegram_webhook_router)
-    app.service_provider = service_provider
+    app.service_provider = service_provider  # type: ignore
     return app
 
 

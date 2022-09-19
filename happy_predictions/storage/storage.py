@@ -1,6 +1,6 @@
 from typing import Optional, Protocol, runtime_checkable
 
-from happy_predictions.services.storage.models import DatabaseUser
+from happy_predictions.storage.models import DatabaseUser
 
 
 @runtime_checkable

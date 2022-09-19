@@ -1,10 +1,10 @@
 import telegram as tg
 
 from happy_predictions.const import YEAR
-from happy_predictions.services.predictions import Predictions
-from happy_predictions.services.storage.storage import Storage
-from happy_predictions.services.telegram.fix_telegram_types import Update
-from happy_predictions.services.telegram.provided_handlers import ProvidedHandlers
+from happy_predictions.predictor.predictor import Predictor
+from happy_predictions.storage.storage import Storage
+from happy_predictions.telegram.fix_telegram_types import Update
+from happy_predictions.telegram.provided_handlers import ProvidedHandlers
 
 telegram_handlers = ProvidedHandlers()
 
@@ -32,7 +32,7 @@ async def on_start(update: Update):
 
 @telegram_handlers.add_callback_query_handler
 async def make_prediction_callback(
-    update: Update, storage: Storage, predictions: Predictions
+    update: Update, storage: Storage, predictor: Predictor
 ):
     user: tg.User = update.callback_query.from_user  # type: ignore
     if not update.effective_chat:
@@ -45,15 +45,18 @@ async def make_prediction_callback(
             f"К сожалению или к счастью, не получится )\n\n"
             f"Всем положено только одно предсказание на этот год!"
         )
-        img = predictions.get_prediction(found_user.prediction, found_user.background)
+        image = predictor.get_prediction(found_user.prediction_params())
     else:
         await update.effective_chat.send_message(
             f"Привет {user.name}! Хочешь узнать что ждет тебя в {YEAR} году?\n\n"
             f"Моё предсказание:"
         )
-        index, background, img = predictions.get_random_prediction()
-        await storage.new_user(user.id, index, background)
-    await update.effective_chat.send_photo(img)
+        prediction_params = predictor.get_random_prediction_params()
+        image = predictor.get_prediction(prediction_params)
+        await storage.new_user(
+            user.id, prediction_params.text_id, prediction_params.background_name
+        )
+    await update.effective_chat.send_photo(image)
     await update.effective_chat.send_message(
         f"Кто ещё не получил своё предсказание на {YEAR} год?",
         reply_markup=keyboard("Получить предсказание!"),

@@ -1,5 +1,5 @@
-from typing import Callable, Type, TypeVar
+from typing import Any, Callable, Type, TypeAlias
 
-Service = TypeVar("Service")
-ServiceClass = Type[Service]
-BuilderFunc = Callable
+Service: TypeAlias = Any
+ServiceClass: TypeAlias = Type[Service]
+BuilderFunc: TypeAlias = Callable

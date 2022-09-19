@@ -13,10 +13,10 @@ from happy_predictions.service_provider.service_provider import ServiceProvider
 
 
 def resolve_callback(
-    unresolved_callback: FunctionType, service_solver: ServiceProvider
+    unresolved_callback: FunctionType, service_provider: ServiceProvider
 ) -> HandlerCallback:
     resolved_callback = partial_function_resolve(
-        unresolved_callback, service_solver.solvable(), service_solver.solve
+        unresolved_callback, service_provider.solvable(), service_provider.solve
     )
     update_param_name, context_param_name = get_update_and_context_param_names(
         resolved_callback

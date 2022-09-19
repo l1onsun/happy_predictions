@@ -1,4 +1,3 @@
-# Makefile only for dev tasks
 include .env
 export
 

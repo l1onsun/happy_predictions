@@ -2,9 +2,10 @@
 version: '3.7'
 services:
 
-  web:
+  happy_predictions:
     restart: unless-stopped
-#    image: ${CI_REGISTRY}/happy_predictions:latest
+    hostname: happy_predictions
+    #    image: ${CI_REGISTRY}/happy_predictions:latest
     build:
       context: .
     ports:

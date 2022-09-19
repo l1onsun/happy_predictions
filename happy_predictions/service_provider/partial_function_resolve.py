@@ -1,13 +1,12 @@
 import functools
 import inspect
-from types import FunctionType
 from typing import Any, Callable, Container
 
 from happy_predictions.service_provider.types import ServiceClass
 
 
 def partial_function_resolve(
-    function: FunctionType,
+    function: Callable,
     services_to_resolve: Container[ServiceClass],
     resolve_by_callable: Callable[[ServiceClass], Any],
 ):

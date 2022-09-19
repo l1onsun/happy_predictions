@@ -4,7 +4,7 @@ from typing import Callable
 import telegram.ext as tge
 
 from happy_predictions.service_provider.service_provider import ServiceProvider
-from happy_predictions.services.telegram.provided_handlers_types import (
+from happy_predictions.telegram.provided_handlers_types import (
     CallbackQueryHandlerResolver,
     CommandHandlerResolver,
     ProvidedHandler,

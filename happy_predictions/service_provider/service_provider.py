@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Container, Generic
+from typing import Container
 
 from happy_predictions.service_provider.service_factory import ServiceFactories
 from happy_predictions.service_provider.types import Service, ServiceClass
@@ -8,7 +8,7 @@ _service_locked_sentinel = object()
 
 
 @dataclass
-class ServiceProvider(Generic[Service]):
+class ServiceProvider:
     services: dict[ServiceClass, Service]
     factories: ServiceFactories
 
@@ -43,7 +43,7 @@ class ServiceProvider(Generic[Service]):
             )
         return service
 
-    def _build(self, service_class):
+    def _build(self, service_class: ServiceClass) -> Service:
         self.services[service_class] = _service_locked_sentinel
         service = self.factories.get_factory(service_class).build_with_provider(self)
         self.services[service_class] = service

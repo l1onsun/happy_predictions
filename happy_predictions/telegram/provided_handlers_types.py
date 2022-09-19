@@ -5,9 +5,7 @@ from typing import Protocol
 import telegram.ext as tge
 
 from happy_predictions.service_provider.service_provider import ServiceProvider
-from happy_predictions.services.telegram.resolve_handler_callback import (
-    resolve_callback,
-)
+from happy_predictions.telegram.resolve_handler_callback import resolve_callback
 
 
 class ProvidedHandler(Protocol):
