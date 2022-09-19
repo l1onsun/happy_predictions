@@ -13,6 +13,7 @@ dependencies = [
     "python-telegram-bot==20.0.a4",
     "sqlalchemy[asyncio]",
     "asyncpg",
+    "alembic",
 
     "pytest",
     "pytest-asyncio",
