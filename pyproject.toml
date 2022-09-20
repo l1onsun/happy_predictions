@@ -11,7 +11,7 @@ dependencies = [
     "motor",
     "pillow",
     "python-telegram-bot==20.0.a4",
-    "sqlalc hemy[asyncio]",
+    "sqlalchemy[asyncio]",
     "asyncpg",
     "alembic",
     "structlog",

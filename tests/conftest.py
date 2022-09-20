@@ -2,6 +2,7 @@ from os import environ
 from typing import Optional
 
 import pytest
+import pytest_asyncio
 from _pytest.mark import Mark
 from fastapi import FastAPI
 
@@ -34,9 +35,12 @@ def service_provider(request, env: Env):
     return service_provider
 
 
-@pytest.fixture
-def fastapi(service_provider: ServiceProvider) -> FastAPI:
-    return service_provider.provide(FastAPI)
+@pytest_asyncio.fixture
+async def fastapi(service_provider: ServiceProvider) -> FastAPI:
+    app = service_provider.provide(FastAPI)
+    await app.router.startup()
+    yield app
+    await app.router.shutdown()
 
 
 @pytest.fixture

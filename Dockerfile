@@ -25,5 +25,6 @@ COPY happy_predictions ./happy_predictions
 
 CMD ["uvicorn", "happy_predictions.asgi:app", "--host", "0.0.0.0", "--port", "8080"]
 
-FROM app as app-dev
-COPY requirements-dev.txt ./
+# ToDo: split core and test dependencies, add testing layers
+#FROM app as app-dev
+#COPY requirements-dev.txt ./

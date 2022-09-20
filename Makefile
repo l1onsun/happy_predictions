@@ -15,6 +15,7 @@ requirements.txt: pyproject.toml
 	CUSTOM_COMPILE_COMMAND="make requirements.txt" pip-compile \
 		--output-file=requirements.txt \
 		--generate-hashes \
+		--verbose \
 		pyproject.toml
 
 sync:
