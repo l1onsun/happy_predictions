@@ -46,8 +46,3 @@ async def fastapi(service_provider: ServiceProvider) -> FastAPI:
 @pytest.fixture
 def telegram(service_provider: ServiceProvider) -> TelegramService:
     return service_provider.provide(TelegramService)
-
-
-# @pytest.fixture
-# def telegram(service_provider: ServiceProvider) -> TelegramService:
-#     return service_provider.provide(TelegramService

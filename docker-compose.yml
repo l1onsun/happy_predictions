@@ -5,9 +5,13 @@ services:
   happy_predictions:
     restart: unless-stopped
     hostname: happy_predictions
-    #    image: ${CI_REGISTRY}/happy_predictions:latest
     build:
       context: .
     ports:
       - 8443:8443
     env_file: .env
+    environment:
+      MONGO_URI: mongodb://happy_mongo:27017/happy_predictions
+
+  happy_mongo:
+    image: 'mongo:4'

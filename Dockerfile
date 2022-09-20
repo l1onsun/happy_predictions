@@ -23,7 +23,7 @@ COPY --from=builder ${BUILDER_INSTALL_PREFIX} /usr/local
 
 COPY happy_predictions ./happy_predictions
 
-CMD ["uvicorn", "happy_predictions.asgi:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uvicorn", "happy_predictions.asgi:app", "--host", "0.0.0.0", "--port", "8443"]
 
 # ToDo: split core and test dependencies, add testing layers
 #FROM app as app-dev

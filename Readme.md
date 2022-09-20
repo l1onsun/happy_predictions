@@ -1,6 +1,10 @@
 Telegram bot, that predicts your future once a year
 
 ### Development
+#### Run local in docker
+```shell
+> docker compose up
+```
 #### Install dependencies
 ```shell
 > # activate venv
