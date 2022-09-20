@@ -1,14 +1,14 @@
 import functools
 import inspect
-from typing import Any, Callable, Container
+from typing import Any, Callable, Container, Type
 
-from happy_predictions.service_provider.types import ServiceClass
+from happy_predictions.service_provider.types import Service
 
 
 def partial_function_resolve(
     function: Callable,
-    services_to_resolve: Container[ServiceClass],
-    resolve_by_callable: Callable[[ServiceClass], Any],
+    services_to_resolve: Container[Type[Service]],
+    resolve_by_callable: Callable[[Type[Service]], Any],
 ):
     partial_kwargs = {}
     for parameter in inspect.signature(function).parameters.values():

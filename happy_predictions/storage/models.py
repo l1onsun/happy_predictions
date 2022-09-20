@@ -1,3 +1,4 @@
+# ToDo: Legacy code - needs refactoring
 from pydantic import BaseModel, Field
 
 from happy_predictions.predictor.image_generation import PredictionParams

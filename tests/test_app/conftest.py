@@ -1,9 +1,9 @@
 import httpx
-import pytest
+import pytest_asyncio
 from fastapi import FastAPI
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def app_client(fastapi: FastAPI) -> httpx.AsyncClient:
-    async with httpx.AsyncClient(app=fastapi, base_url="app_test") as client:
+    async with httpx.AsyncClient(app=fastapi, base_url="http://app_test") as client:
         yield client

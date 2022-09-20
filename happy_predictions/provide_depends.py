@@ -1,4 +1,5 @@
 from types import FunctionType
+from typing import Type
 
 from fastapi import Depends, Request
 
@@ -7,14 +8,14 @@ from happy_predictions.service_provider.partial_function_resolve import (
 )
 from happy_predictions.service_provider.service_factory import ServiceFactories
 from happy_predictions.service_provider.service_provider import ServiceProvider
-from happy_predictions.service_provider.types import Service, ServiceClass
+from happy_predictions.service_provider.types import Service
 
 
 def get_service_provider(request: Request) -> ServiceProvider:
     return request.app.service_provider
 
 
-def provide(service_class: ServiceClass) -> Service:
+def provide(service_class: Type[Service]) -> Service:
     def fastapi_dependency(
         service_provider: ServiceProvider = Depends(get_service_provider),
     ) -> Service:

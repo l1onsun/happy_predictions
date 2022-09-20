@@ -1,13 +1,13 @@
 import inspect
 from collections import UserDict
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Protocol, Type
 
 from happy_predictions.service_provider.types import BuilderFunc, Service, ServiceClass
 
 
 class _ServiceProvider(Protocol):
-    def solve(self, service_class: ServiceClass) -> Service:
+    def solve(self, service_class: Type[Service]) -> Service:
         ...
 
 
@@ -57,7 +57,7 @@ class ServiceFactories(UserDict[ServiceClass, ServiceFactory]):
         self[factory.service_class] = factory
         return builder_function
 
-    def get_factory(self, service_class: ServiceClass) -> ServiceFactory:
+    def get_factory(self, service_class: Type[Service]) -> ServiceFactory:
         try:
             return self[service_class]
         except KeyError:

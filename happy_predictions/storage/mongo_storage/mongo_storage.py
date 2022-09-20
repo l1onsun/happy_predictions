@@ -1,3 +1,5 @@
+# ToDo: Legacy code - needs refactoring
+
 from dataclasses import dataclass
 from typing import Optional
 

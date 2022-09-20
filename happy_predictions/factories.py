@@ -12,8 +12,8 @@ from happy_predictions.storage.mongo_storage.mongo_storage import MongoStorage
 from happy_predictions.storage.storage import Storage
 from happy_predictions.telegram.telegram_service import TelegramService
 from happy_predictions.telegram_handlers import telegram_handlers
+from happy_predictions.telegram_webhook import router as telegram_webhook_router
 from happy_predictions.utils import url_join
-from happy_predictions.webhook import router as telegram_webhook_router
 
 service_factories = ServiceFactories()
 
@@ -26,9 +26,14 @@ def build_fastapi(
 ) -> FastAPI:
     async def on_startup():
         service_provider.solve_all()
-        await service_provider.provide(TelegramService).set_webhook(webhook_url)
+        telegram = service_provider.provide(TelegramService)
+        await telegram.initialize()  # ToDo: move async initialization to factories
+        await telegram.set_webhook(webhook_url)
 
-    app = FastAPI(on_startup=[on_startup])
+    async def on_shutdown():
+        await service_provider.provide(TelegramService).shutdown()
+
+    app = FastAPI(on_startup=[on_startup], on_shutdown=[on_shutdown])
     app.include_router(telegram_webhook_router)
     app.service_provider = service_provider  # type: ignore
     return app

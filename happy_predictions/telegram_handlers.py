@@ -1,3 +1,5 @@
+# ToDo: Legacy code - needs refactoring
+
 import telegram as tg
 
 from happy_predictions.const import YEAR
