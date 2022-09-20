@@ -6,6 +6,9 @@ from telegram import Bot
 
 from happy_predictions.const import TELEGRAM_WEBHOOK_PATH
 from happy_predictions.env import Env
+from happy_predictions.predictor.assets_manager import AssetsBox
+from happy_predictions.predictor.image_generation import ImageGenerator
+from happy_predictions.predictor.predictor import Predictor
 from happy_predictions.service_provider.service_factory import ServiceFactories
 from happy_predictions.service_provider.service_provider import ServiceProvider
 from happy_predictions.storage.mongo_storage.mongo_storage import MongoStorage
@@ -73,3 +76,18 @@ def choose_storage_implementation(mongo_storage: MongoStorage) -> Storage:
 @service_factories.add
 def build_webhook_full_url(env: Env) -> WebhookFullUrl:
     return url_join(env.bot_host, TELEGRAM_WEBHOOK_PATH)
+
+
+@service_factories.add
+def build_predictor(image_gen: ImageGenerator, assets: AssetsBox) -> Predictor:
+    return Predictor(image_gen, assets)
+
+
+@service_factories.add
+def build_image_generator(assets: AssetsBox) -> ImageGenerator:
+    return ImageGenerator(assets)
+
+
+@service_factories.add
+def build_assets_box() -> AssetsBox:
+    return AssetsBox.load_assets()
