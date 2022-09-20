@@ -8,14 +8,14 @@ from happy_predictions.service_provider.partial_function_resolve import (
 )
 from happy_predictions.service_provider.service_factory import ServiceFactories
 from happy_predictions.service_provider.service_provider import ServiceProvider
-from happy_predictions.service_provider.types import Service
+from happy_predictions.service_provider.types import Service, TService
 
 
 def get_service_provider(request: Request) -> ServiceProvider:
     return request.app.service_provider
 
 
-def provide(service_class: Type[Service]) -> Service:
+def provide(service_class: Type[TService]) -> TService:
     def fastapi_dependency(
         service_provider: ServiceProvider = Depends(get_service_provider),
     ) -> Service:
