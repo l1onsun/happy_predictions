@@ -1,3 +1,4 @@
+import io
 from dataclasses import InitVar, dataclass, field
 from functools import lru_cache
 from typing import TypeAlias
@@ -60,17 +61,26 @@ class TextWithOutlineDrawer:
 class ImageGenerator:
     assets: AssetsBox
 
-    def gen_image(self, prediction_params: PredictionParams) -> Image:
+    def gen_image(self, prediction_params: PredictionParams) -> io.BytesIO:
         background = self.assets.get_background(prediction_params.background_name)
         font_size = background.width // FONT_SIZE_TO_WIDTH_RATIO
 
-        return TextWithOutlineDrawer(
-            text=self.assets.get_prediction_text(prediction_params.text_id),
-            background=background,
-            font=self.assets.get_font(font_size),
-            font_size=font_size,
-        ).draw()
+        return self._to_bytes(
+            TextWithOutlineDrawer(
+                text=self.assets.get_prediction_text(prediction_params.text_id),
+                background=background,
+                font=self.assets.get_font(font_size),
+                font_size=font_size,
+            ).draw()
+        )
 
     @lru_cache(maxsize=IMAGE_CACHE_LEN)
-    def gen_image_cached(self, prediction_params: PredictionParams):
+    def gen_image_cached(self, prediction_params: PredictionParams) -> io.BytesIO:
         return self.gen_image(prediction_params)
+
+    @staticmethod
+    def _to_bytes(image: Image) -> io.BytesIO:
+        image_as_bytes = io.BytesIO()
+        image.save(image_as_bytes, format="jpeg")
+        image_as_bytes.seek(0)
+        return image_as_bytes

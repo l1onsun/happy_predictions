@@ -4,7 +4,6 @@ services:
 
   happy_predictions:
     restart: unless-stopped
-    hostname: happy_predictions
     build:
       context: .
     ports:
@@ -14,7 +13,15 @@ services:
       MONGO_URI: mongodb://happy_mongo:27017/happy_predictions
     volumes:
       - ./assets/:/code/assets:ro
+    networks:
+      - docker_network
 
 
   happy_mongo:
     image: 'mongo:4'
+    networks:
+      - docker_network
+
+networks:
+  docker_network:
+    driver: bridge

@@ -3,6 +3,7 @@ import os
 import random
 from dataclasses import dataclass
 
+import structlog
 from PIL import Image, ImageFont
 
 from happy_predictions.const import YEAR
@@ -10,6 +11,8 @@ from happy_predictions.const import YEAR
 PREDICTIONS_CSV_PATH = f"assets/{YEAR}_drive.csv"
 BACKGROUNDS_PATH = "assets/backgrounds"
 FONT_PATH = "assets/arial.ttf"
+
+log = structlog.get_logger()
 
 
 @dataclass
@@ -39,6 +42,7 @@ class AssetsBox:
         for img_name in os.listdir(BACKGROUNDS_PATH):
             img_path = os.path.join(BACKGROUNDS_PATH, img_name)
             backgrounds[img_name] = Image.open(img_path)
+            log.debug(f"open background {img_path}")
         return backgrounds
 
     def random_prediction_text_id(self) -> int:
