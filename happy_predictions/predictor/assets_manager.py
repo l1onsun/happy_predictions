@@ -34,7 +34,10 @@ class AssetsBox:
         with open(PREDICTIONS_CSV_PATH, "r") as file:
             predictions_raw = list(csv.reader(file, delimiter=","))
         predictions_skip_header = predictions_raw[1:]
-        return {i: values[0] for i, values in enumerate(predictions_skip_header)}
+        return {
+            i: values[0].replace("@", "\n")
+            for i, values in enumerate(predictions_skip_header)
+        }
 
     @staticmethod
     def _load_backgrounds() -> dict[str, Image]:
