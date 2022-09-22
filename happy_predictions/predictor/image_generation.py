@@ -1,11 +1,11 @@
 import io
 from dataclasses import InitVar, dataclass, field
-from functools import lru_cache
 from typing import TypeAlias
 
 from PIL import Image, ImageDraw, ImageFont
 
 from happy_predictions.predictor.assets_manager import AssetsBox
+from happy_predictions.predictor.lru_cache import LruCacheDict
 
 IMAGE_CACHE_LEN = 10
 OUTLINE_SHIFT_TO_FONT_RATIO = 50
@@ -20,6 +20,39 @@ Position: TypeAlias = tuple[int, int]
 class PredictionParams:
     text_id: int
     background_name: str
+
+
+@dataclass
+class ImageGenerator:
+    assets: AssetsBox
+    cache: LruCacheDict[PredictionParams, io.BytesIO] = field(
+        default_factory=lambda: LruCacheDict(max_size=10)
+    )
+
+    def gen_image(self, prediction_params: PredictionParams) -> io.BytesIO:
+        background = self.assets.get_background(prediction_params.background_name)
+        font_size = background.width // FONT_SIZE_TO_WIDTH_RATIO
+
+        return self._to_bytes(
+            TextWithOutlineDrawer(
+                text=self.assets.get_prediction_text(prediction_params.text_id),
+                background=background,
+                font=self.assets.get_font(font_size),
+                font_size=font_size,
+            ).draw()
+        )
+
+    def gen_image_cached(self, prediction_params: PredictionParams) -> io.BytesIO:
+        return self.cache.get(prediction_params) or self.cache.put(
+            prediction_params, self.gen_image(prediction_params)
+        )
+
+    @staticmethod
+    def _to_bytes(image: Image) -> io.BytesIO:
+        image_as_bytes = io.BytesIO()
+        image.save(image_as_bytes, format="jpeg")
+        image_as_bytes.seek(0)
+        return image_as_bytes
 
 
 @dataclass
@@ -55,32 +88,3 @@ class TextWithOutlineDrawer:
         self.image_draw.text(
             pos, self.text, font=self.font, fill=color, anchor="mm", align="center"
         )
-
-
-@dataclass
-class ImageGenerator:
-    assets: AssetsBox
-
-    def gen_image(self, prediction_params: PredictionParams) -> io.BytesIO:
-        background = self.assets.get_background(prediction_params.background_name)
-        font_size = background.width // FONT_SIZE_TO_WIDTH_RATIO
-
-        return self._to_bytes(
-            TextWithOutlineDrawer(
-                text=self.assets.get_prediction_text(prediction_params.text_id),
-                background=background,
-                font=self.assets.get_font(font_size),
-                font_size=font_size,
-            ).draw()
-        )
-
-    @lru_cache(maxsize=IMAGE_CACHE_LEN)
-    def gen_image_cached(self, prediction_params: PredictionParams) -> io.BytesIO:
-        return self.gen_image(prediction_params)
-
-    @staticmethod
-    def _to_bytes(image: Image) -> io.BytesIO:
-        image_as_bytes = io.BytesIO()
-        image.save(image_as_bytes, format="jpeg")
-        image_as_bytes.seek(0)
-        return image_as_bytes
