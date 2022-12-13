@@ -55,8 +55,8 @@ async def make_prediction_callback(update: Update, assets: AssetsBox):
         case background:
             await update.effective_chat.send_message(
                 f"Выбран background: {background}\n"
-                "Теперь напиши в чат номер предсказания\n",
-                f"От 0 до {len(assets.list_available_text_ids()) - 1}",
+                "Теперь напиши в чат номер предсказания\n"
+                f"От 0 до {len(assets.list_available_text_ids()) - 1}"
             )
 
 
@@ -107,11 +107,11 @@ async def generate_prediction(
     try:
         start = time.time()
         image = predictor.get_prediction(prediction_params)
-        end = time.time()
+        generation_seconds = time.time() - start
     except MissingAsset as e:
         await update.effective_chat.send_message(f"Не найдено предсказание\n{e}")
         return
     await update.effective_chat.send_photo(image)
     await update.effective_chat.send_message(
-        f"image generation time: {end - start} sec"
+        f"image generation time: {generation_seconds * 1000} ms"
     )
