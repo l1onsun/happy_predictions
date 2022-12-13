@@ -1,13 +1,13 @@
 import httpx
 import pytest
 
-from happy_predictions.const import TELEGRAM_WEBHOOK_PATH
+from happy_predictions.const import MAIN_TELEGRAM_WEBHOOK_PATH
 
 
 @pytest.mark.asyncio
 async def test_start(app_client):
     resp: httpx.Response = await app_client.post(
-        TELEGRAM_WEBHOOK_PATH,
+        MAIN_TELEGRAM_WEBHOOK_PATH,
         json={
             "update_id": 1,
             "message": {

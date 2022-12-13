@@ -23,11 +23,9 @@ class TelegramService:
     async def process_update(self, update: Update):
         return await self.application.process_update(update)
 
-    async def set_webhook(self, url: str):
-        return await self.application.bot.set_webhook(url)
-
-    async def initialize(self):
-        return await self.application.initialize()
+    async def initialize(self, webhook_url: str):
+        await self.application.initialize()
+        await self.application.bot.set_webhook(webhook_url)
 
     async def shutdown(self):
         return await self.application.shutdown()

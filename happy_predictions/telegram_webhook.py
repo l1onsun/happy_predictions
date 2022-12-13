@@ -1,7 +1,11 @@
 import structlog as structlog
 from fastapi import APIRouter, Depends, Request
 
-from happy_predictions.const import TELEGRAM_WEBHOOK_PATH
+from happy_predictions.const import (
+    ADMIN_TELEGRAM_WEBHOOK_PATH,
+    MAIN_TELEGRAM_WEBHOOK_PATH,
+)
+from happy_predictions.factory_types import AdminTelegramService, MainTelegramService
 from happy_predictions.provide_depends import provide
 from happy_predictions.telegram.fix_telegram_types import Update
 from happy_predictions.telegram.telegram_service import TelegramService
@@ -20,10 +24,18 @@ async def parse_update(
     return telegram_service.parse_update_from_json(request_json)
 
 
-@router.post(TELEGRAM_WEBHOOK_PATH)
-async def webhook(
+@router.post(MAIN_TELEGRAM_WEBHOOK_PATH)
+async def main_webhook(
     update: Update = Depends(parse_update),
-    telegram_service=provide(TelegramService),
+    telegram_service=provide(MainTelegramService),
+):
+    await telegram_service.process_update(update)
+
+
+@router.post(ADMIN_TELEGRAM_WEBHOOK_PATH)
+async def admin_webhook(
+    update: Update = Depends(parse_update),
+    telegram_service=provide(AdminTelegramService),
 ):
     await telegram_service.process_update(update)
 

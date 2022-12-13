@@ -11,7 +11,7 @@ install:
 	pip install -r requirements.txt
 	pre-commit install
 
-requirements.txt: pyproject.toml
+requirements.txt: requirements.in
 	CUSTOM_COMPILE_COMMAND="make requirements.txt" pip-compile \
 		--output-file=requirements.txt \
 		--generate-hashes \

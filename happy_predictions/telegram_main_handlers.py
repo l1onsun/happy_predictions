@@ -1,5 +1,3 @@
-# ToDo: Legacy code - needs refactoring
-
 import telegram as tg
 
 from happy_predictions.const import YEAR
@@ -8,7 +6,7 @@ from happy_predictions.storage.storage import Storage
 from happy_predictions.telegram.fix_telegram_types import Update
 from happy_predictions.telegram.provided_handlers import ProvidedHandlers
 
-telegram_handlers = ProvidedHandlers()
+main_handlers = ProvidedHandlers()
 
 
 def keyboard(text):
@@ -18,7 +16,7 @@ def keyboard(text):
     return tg.InlineKeyboardMarkup(inline_keyboard)
 
 
-@telegram_handlers.add_start_handler
+@main_handlers.add_start_handler
 async def on_start(update: Update):
     if not update.effective_chat:
         raise RuntimeError("No effective chat")
@@ -32,7 +30,7 @@ async def on_start(update: Update):
     )
 
 
-@telegram_handlers.add_callback_query_handler
+@main_handlers.add_callback_query_handler
 async def make_prediction_callback(
     update: Update, storage: Storage, predictor: Predictor
 ):
