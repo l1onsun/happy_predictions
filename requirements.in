@@ -1,24 +1,15 @@
-[build-system]
-requires = ["whey"]
-build-backend = "whey"
+fastapi
+uvicorn
+motor
+pillow
+python-telegram-bot==20.0.a4
+sqlalchemy[asyncio]
+asyncpg
+alembic
+structlog
 
-[project]
-name = "happy_predictions"
-version = "42"
-dependencies = [
-    "fastapi",
-    "uvicorn",
-    "motor",
-    "pillow",
-    "python-telegram-bot==20.0.a4",
-    "sqlalchemy[asyncio]",
-    "asyncpg",
-    "alembic",
-    "structlog",
-
-    "pytest",
-    "pytest-asyncio",
-    "pip-tools",
-    "devtools",
-    "pre-commit",
-]
+pytest
+pytest-asyncio
+pip-tools
+devtools
+pre-commit

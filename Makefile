@@ -16,7 +16,7 @@ requirements.txt: requirements.in
 		--output-file=requirements.txt \
 		--generate-hashes \
 		--verbose \
-		pyproject.toml
+		requirements.in
 
 sync:
 	pip-sync requirements.txt
