@@ -1,6 +1,6 @@
 import inspect
 from types import FunctionType
-from typing import Any
+from typing import Any, Callable
 
 import telegram.ext as tge
 from telegram._update import Update
@@ -13,7 +13,7 @@ from happy_predictions.service_provider.service_provider import ServiceProvider
 
 
 def resolve_callback(
-    unresolved_callback: FunctionType, service_provider: ServiceProvider
+    unresolved_callback: Callable, service_provider: ServiceProvider
 ) -> HandlerCallback:
     resolved_callback = partial_function_resolve(
         unresolved_callback, service_provider.solvable(), service_provider.solve

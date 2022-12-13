@@ -7,6 +7,7 @@ from happy_predictions.service_provider.service_provider import ServiceProvider
 from happy_predictions.telegram.provided_handlers_types import (
     CallbackQueryHandlerResolver,
     CommandHandlerResolver,
+    MessageHandlerResolver,
     ProvidedHandler,
 )
 
@@ -35,3 +36,7 @@ class ProvidedHandlers:
     @_add_handler_to_handlers_list
     def add_callback_query_handler(self, callback: FunctionType):
         return CallbackQueryHandlerResolver(callback)
+
+    @_add_handler_to_handlers_list
+    def add_message_handler(self, callback: FunctionType):
+        return MessageHandlerResolver(callback)

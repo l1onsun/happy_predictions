@@ -15,6 +15,10 @@ FONT_PATH = "assets/arial.ttf"
 log = structlog.get_logger()
 
 
+class MissingAsset(Exception):
+    ...
+
+
 @dataclass
 class AssetsBox:
     _prediction_texts: dict[int, str]
@@ -48,17 +52,26 @@ class AssetsBox:
             log.debug(f"open background {img_path}")
         return backgrounds
 
+    def list_available_backgrounds(self) -> list[str]:
+        return list(self._backgrounds.keys())
+
     def random_prediction_text_id(self) -> int:
         return random.choice(list(self._prediction_texts.keys()))
 
     def random_background_name(self) -> str:
-        return random.choice(list(self._backgrounds.keys()))
+        return random.choice(self.list_available_backgrounds())
 
     def get_prediction_text(self, text_id: int) -> str:
-        return self._prediction_texts[text_id]
+        try:
+            return self._prediction_texts[text_id]
+        except KeyError:
+            raise MissingAsset(f"No text with {text_id=}")
 
     def get_background(self, name: str) -> Image:
-        return self._backgrounds[name]
+        try:
+            return self._backgrounds[name]
+        except KeyError:
+            raise MissingAsset(f"No background with {name=}")
 
     def get_font(self, size: int) -> ImageFont:
         return self._fonts.get(size) or self._load_font(size)

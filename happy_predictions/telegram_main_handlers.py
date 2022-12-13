@@ -9,9 +9,13 @@ from happy_predictions.telegram.provided_handlers import ProvidedHandlers
 main_handlers = ProvidedHandlers()
 
 
-def keyboard(text):
+def keyboard(*tables: dict[str, str]):
     inline_keyboard = [
-        [tg.InlineKeyboardButton(text, callback_data="prediction")],
+        [
+            tg.InlineKeyboardButton(text, callback_data=callback_data)
+            for text, callback_data in table.items()
+        ]
+        for table in tables
     ]
     return tg.InlineKeyboardMarkup(inline_keyboard)
 
@@ -26,7 +30,7 @@ async def on_start(update: Update):
     )
     await update.effective_chat.send_message(
         f"Мяу... Хочешь получить предсказание на {YEAR} год?",
-        reply_markup=keyboard("Получить предсказание!"),
+        reply_markup=keyboard({"Получить предсказание!": "prediction"}),
     )
 
 
@@ -59,5 +63,5 @@ async def make_prediction_callback(
     await update.effective_chat.send_photo(image)
     await update.effective_chat.send_message(
         f"Кто ещё не получил своё предсказание на {YEAR} год?",
-        reply_markup=keyboard("Получить предсказание!"),
+        reply_markup=keyboard({"Получить предсказание!": "prediction"}),
     )

@@ -1,6 +1,5 @@
 from dataclasses import dataclass
-from types import FunctionType
-from typing import Protocol
+from typing import Callable, Protocol
 
 import telegram.ext as tge
 
@@ -16,7 +15,7 @@ class ProvidedHandler(Protocol):
 @dataclass
 class CommandHandlerResolver(ProvidedHandler):
     command: str
-    unresolved_callback: FunctionType
+    unresolved_callback: Callable
 
     def solve(self, service_provider: ServiceProvider):
         return tge.CommandHandler(
@@ -26,9 +25,20 @@ class CommandHandlerResolver(ProvidedHandler):
 
 @dataclass
 class CallbackQueryHandlerResolver(ProvidedHandler):
-    unresolved_callback: FunctionType
+    unresolved_callback: Callable
 
     def solve(self, service_provider: ServiceProvider):
         return tge.CallbackQueryHandler(
             resolve_callback(self.unresolved_callback, service_provider)
+        )
+
+
+@dataclass
+class MessageHandlerResolver(ProvidedHandler):
+    unresolved_callback: Callable
+
+    def solve(self, service_provider: ServiceProvider):
+        return tge.MessageHandler(
+            tge.filters.ALL,
+            resolve_callback(self.unresolved_callback, service_provider),
         )
