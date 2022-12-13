@@ -18,7 +18,8 @@ def env():
     return Env(
         mongo_uri=environ.get("TEST_MONGO_URI")
         or "mongodb://localhost:27017/happy_predictions_test",
-        telegram_api_token="fake_telegram_api_token",
+        tg_token_main="fake_telegram_api_token_main",
+        tg_token_admin="fake_telegram_api_token_admin",
         bot_host="localhost",
         debug=True,
     )
