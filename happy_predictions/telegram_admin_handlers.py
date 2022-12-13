@@ -31,11 +31,11 @@ async def on_start(update: Update):
 
 @admin_handlers.add_callback_query_handler
 async def make_prediction_callback(update: Update, assets: AssetsBox):
-    match update.callback_query:
+    match update.callback_query.data:
         case "how_to":
             await update.effective_chat.send_message(
-                "Напиши в чат название backround и номер предсказания\n"
-                "Например `b1.jpg 0`\n",
+                "Напиши через пробел название backround и номер предсказания\n"
+                "Пример: b1.jpg 0\n",
                 reply_markup=keyboard({"Список background-ов": "list_backgrounds"}),
             )
         case "list_backgrounds":
@@ -45,7 +45,7 @@ async def make_prediction_callback(update: Update, assets: AssetsBox):
             )
 
 
-@admin_handlers.add_callback_query_handler
+@admin_handlers.add_message_handler
 async def generate_prediction(update: Update, predictor: Predictor):
     if not update.effective_chat:
         log.warning(f"got message without effective_chat {update.update_id=}")
@@ -58,7 +58,7 @@ async def generate_prediction(update: Update, predictor: Predictor):
         prediction_id = int(prediction_id_str)
     except ValueError:
         await update.effective_chat.send_message(
-            "Неправильный формат. Пример `b1.jpg 0`"
+            "Неправильный формат. Пример: b1.jpg 0"
         )
         return
     try:
