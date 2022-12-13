@@ -8,7 +8,7 @@ check:
 	pre-commit run -a
 
 install:
-	pip install -r requirements.txt
+	pip install --no-deps -r requirements.txt
 	pre-commit install
 
 requirements.txt: requirements.in

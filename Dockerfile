@@ -14,8 +14,11 @@ WORKDIR /code/
 FROM python-base as builder
 
 COPY requirements.txt ./
-RUN --mount=type=cache,target=${PIP_CACHE_DIR} pip install \
-    --prefix=${BUILDER_INSTALL_PREFIX} -r requirements.txt
+RUN --mount=type=cache,target=${PIP_CACHE_DIR} \
+    pip install \
+    --no-deps \
+    --prefix=${BUILDER_INSTALL_PREFIX} \
+    -r requirements.txt
 
 FROM python-base as app
 
