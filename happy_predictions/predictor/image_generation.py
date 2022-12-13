@@ -51,7 +51,6 @@ class ImageGenerator:
     def _to_bytes(image: Image) -> io.BytesIO:
         image_as_bytes = io.BytesIO()
         image.save(image_as_bytes, format="jpeg")
-        image_as_bytes.seek(0)
         return image_as_bytes
 
 
