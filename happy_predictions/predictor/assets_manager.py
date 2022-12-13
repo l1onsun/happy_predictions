@@ -55,8 +55,11 @@ class AssetsBox:
     def list_available_backgrounds(self) -> list[str]:
         return list(self._backgrounds.keys())
 
+    def list_available_text_ids(self) -> list[int]:
+        return list(self._prediction_texts.keys())
+
     def random_prediction_text_id(self) -> int:
-        return random.choice(list(self._prediction_texts.keys()))
+        return random.choice(self.list_available_text_ids())
 
     def random_background_name(self) -> str:
         return random.choice(self.list_available_backgrounds())

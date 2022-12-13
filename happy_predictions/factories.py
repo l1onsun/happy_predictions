@@ -3,6 +3,7 @@ from typing import cast
 import telegram.ext as tge
 from fastapi import FastAPI
 
+from happy_predictions.admin_service import AdminService
 from happy_predictions.const import (
     ADMIN_TELEGRAM_WEBHOOK_PATH,
     MAIN_TELEGRAM_WEBHOOK_PATH,
@@ -114,3 +115,8 @@ def build_image_generator(assets: AssetsBox) -> ImageGenerator:
 @service_factories.add
 def build_assets_box() -> AssetsBox:
     return AssetsBox.load_assets()
+
+
+@service_factories.add
+def build_admin_service() -> AdminService:
+    return AdminService()

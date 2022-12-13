@@ -1,5 +1,8 @@
+import time
+
 import structlog
 
+from happy_predictions.admin_service import AdminService
 from happy_predictions.predictor.assets_manager import AssetsBox, MissingAsset
 from happy_predictions.predictor.image_generation import PredictionParams
 from happy_predictions.predictor.predictor import Predictor
@@ -24,7 +27,7 @@ async def on_start(update: Update):
         "Мяу... Это админский канал, для проверки генерации картинок!",
         reply_markup=keyboard(
             {"Как сгенерить предсказание?": "how_to"},
-            {"Список background-ов": "list_backgrounds"},
+            {"Выбор background-а": "list_backgrounds"},
         ),
     )
 
@@ -34,38 +37,81 @@ async def make_prediction_callback(update: Update, assets: AssetsBox):
     match update.callback_query.data:
         case "how_to":
             await update.effective_chat.send_message(
-                "Напиши через пробел название backround и номер предсказания\n"
-                "Пример: b1.jpg 0\n",
-                reply_markup=keyboard({"Список background-ов": "list_backgrounds"}),
+                "Напиши через пробел backround и номер текста\nПример: b1.jpg 0\n",
+                reply_markup=keyboard(
+                    {"Или сначала выбери background": "list_backgrounds"}
+                ),
             )
         case "list_backgrounds":
             await update.effective_chat.send_message(
-                "\n".join(assets.list_available_backgrounds()),
-                reply_markup=keyboard({"Как сгенерить предсказание?": "how_to"}),
+                "Выбери background:",
+                reply_markup=keyboard(
+                    *[
+                        {backround: backround}
+                        for backround in assets.list_available_backgrounds()
+                    ]
+                ),
+            )
+        case background:
+            await update.effective_chat.send_message(
+                f"Выбран background: {background}\n"
+                "Теперь напиши в чат номер предсказания\n",
+                f"От 0 до {len(assets.list_available_text_ids()) - 1}",
             )
 
 
-@admin_handlers.add_message_handler
-async def generate_prediction(update: Update, predictor: Predictor):
-    if not update.effective_chat:
-        log.warning(f"got message without effective_chat {update.update_id=}")
-        return
-    if not update.message:
-        log.warning(f"got message without message {update.update_id=}")
-        return
+def parse_prediction_params(
+    text: str, selected_background: str | None
+) -> tuple[PredictionParams | None, str | None]:
+    split = text.split(" ")
+
+    error = None, (
+        "Неправильный формат. Пример: b1.jpg 0"
+        if selected_background is None
+        else "Неправильный формат. Введи номер предсказания"
+    )
+
+    if len(split) == 1 and selected_background is not None:
+        prediction_id_str = split[0]
+    elif len(split) == 2:
+        selected_background, prediction_id_str = split
+    else:
+        return error
+
     try:
-        background_name, prediction_id_str = update.message.text.split(" ")
         prediction_id = int(prediction_id_str)
     except ValueError:
-        await update.effective_chat.send_message(
-            "Неправильный формат. Пример: b1.jpg 0"
-        )
+        return error
+
+    return PredictionParams(prediction_id, selected_background), None
+
+
+@admin_handlers.add_message_handler
+async def generate_prediction(
+    update: Update, predictor: Predictor, admin_service: AdminService
+):
+    if not (update.effective_chat or update.effective_user):
+        log.warning(f"got message without effective_chat {update.update_id=}")
         return
+    if not (message := update.message or update.edited_message):
+        log.warning(f"got message without message {update.update_id=}")
+        return
+
+    prediction_params, error = parse_prediction_params(
+        message.text, admin_service.get_selected_background(update.effective_user.id)
+    )
+    if not prediction_params:
+        await update.effective_chat.send_message(error)
+        return
+
     try:
-        image = predictor.get_prediction(
-            PredictionParams(prediction_id, background_name)
-        )
+        start = time.time()
+        image = predictor.get_prediction(prediction_params)
+        end = time.time()
     except MissingAsset as e:
         await update.effective_chat.send_message(f"Не найдено предсказание\n{e}")
         return
     await update.effective_chat.send_photo(image)
+    await update.effective_chat.send_message(
+        f"image generation time: {end - start} sec"
+    )
