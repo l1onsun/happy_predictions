@@ -33,7 +33,9 @@ async def on_start(update: Update):
 
 
 @admin_handlers.add_callback_query_handler
-async def make_prediction_callback(update: Update, assets: AssetsBox):
+async def make_prediction_callback(
+    update: Update, assets: AssetsBox, admin_service: AdminService
+):
     match update.callback_query.data:
         case "how_to":
             await update.effective_chat.send_message(
@@ -53,6 +55,9 @@ async def make_prediction_callback(update: Update, assets: AssetsBox):
                 ),
             )
         case background:
+            admin_service.selected_background_admin_id[
+                update.effective_user.id
+            ] = background
             await update.effective_chat.send_message(
                 f"Выбран background: {background}\n"
                 "Теперь напиши в чат номер предсказания\n"
