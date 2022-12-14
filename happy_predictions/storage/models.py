@@ -1,7 +1,7 @@
 from dataclasses import asdict, dataclass
 
 import telegram as tg
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from happy_predictions.predictor.image_generation import PredictionParams
 from happy_predictions.utils import JsonType
@@ -27,7 +27,7 @@ class TelegramUser:
 
 
 class DatabaseUser(BaseModel):
-    _id: int
+    mongo_id: int = Field(..., alias="_id")
     prediction: PredictionParams
     telegram_user: TelegramUser
     admin_selected_background: str | None
@@ -35,14 +35,14 @@ class DatabaseUser(BaseModel):
     @classmethod
     def new(cls, tg_user: tg.User, prediction_params: PredictionParams):
         return cls(
-            _id=tg_user.id,
+            mongo_id=tg_user.id,
             prediction=prediction_params,
             telegram_user=TelegramUser.from_tg_user(tg_user),
             admin_selected_background=None,
         )
 
     def to_bson(self) -> JsonType:
-        return self.dict(exclude={"telegram_user", "prediction"}) | {
+        return self.dict(by_alias=True, exclude={"telegram_user", "prediction"}) | {
             "telegram_user": asdict(self.telegram_user),
             "prediction": asdict(self.prediction),
         }

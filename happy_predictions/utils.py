@@ -23,4 +23,4 @@ class TimeCounter:
         time_counter._end = time.time()
 
     def milliseconds_passed(self) -> float:
-        return 1000 * (self._end or time.time() - self._start)
+        return 1000 * ((self._end or time.time()) - self._start)

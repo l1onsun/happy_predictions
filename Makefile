@@ -24,3 +24,8 @@ sync:
 
 run:
 	uvicorn happy_predictions.asgi:app
+
+pull_build_up:
+    git pull
+    docker compose build happy_predictions
+    docker compose up
