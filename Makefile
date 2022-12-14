@@ -13,10 +13,10 @@ install:
 
 requirements.txt: requirements.in
 	CUSTOM_COMPILE_COMMAND="make requirements.txt" pip-compile \
-		--output-file=requirements.txt \
-		--generate-hashes \
-		--verbose \
-		requirements.in
+	--output-file=requirements.txt \
+	--generate-hashes \
+	--verbose \
+	requirements.in
 
 sync:
 	pip-sync requirements.txt
@@ -26,6 +26,6 @@ run:
 	uvicorn happy_predictions.asgi:app
 
 pull_build_up:
-    git pull
-    docker compose build happy_predictions
-    docker compose up
+	git pull
+	docker compose build happy_predictions
+	docker compose up
