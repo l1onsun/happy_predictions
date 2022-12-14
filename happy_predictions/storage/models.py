@@ -1,9 +1,10 @@
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 
 import telegram as tg
 from pydantic import BaseModel
 
 from happy_predictions.predictor.image_generation import PredictionParams
+from happy_predictions.utils import JsonType
 
 
 @dataclass
@@ -39,3 +40,9 @@ class DatabaseUser(BaseModel):
             telegram_user=TelegramUser.from_tg_user(tg_user),
             admin_selected_background=None,
         )
+
+    def to_bson(self) -> JsonType:
+        return self.dict(exclude={"telegram_user", "prediction"}) | {
+            "telegram_user": asdict(self.telegram_user),
+            "prediction": asdict(self.prediction),
+        }

@@ -26,7 +26,7 @@ class MongoStorage(Storage):
         return DatabaseUser(**user) if user is not None else None
 
     async def new_user(self, user: DatabaseUser) -> None:
-        await self._user_coll().insert_one(user.dict(by_alias=True))
+        await self._user_coll().insert_one(user.to_bson())
 
     async def admin_select_background(self, admin_id: int, background: str):
         await self._user_coll().update_one(
