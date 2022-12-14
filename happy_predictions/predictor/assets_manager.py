@@ -39,7 +39,7 @@ class AssetsBox:
             predictions_raw = list(csv.reader(file, delimiter=","))
         predictions_skip_header = predictions_raw[1:]
         return {
-            i: values[0].replace("@", "\n")
+            i: convert_at_sign(values[0])
             for i, values in enumerate(predictions_skip_header)
         }
 
@@ -83,3 +83,7 @@ class AssetsBox:
         font = ImageFont.truetype(FONT_PATH, size=size)
         self._fonts[size] = font
         return font
+
+
+def convert_at_sign(text_with_at_signs: str) -> str:
+    return text_with_at_signs.replace("@", "\n")

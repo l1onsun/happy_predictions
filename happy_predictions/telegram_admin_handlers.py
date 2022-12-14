@@ -1,7 +1,11 @@
 import structlog
 
 from happy_predictions.admin_service import AdminService
-from happy_predictions.predictor.assets_manager import AssetsBox, MissingAsset
+from happy_predictions.predictor.assets_manager import (
+    AssetsBox,
+    MissingAsset,
+    convert_at_sign,
+)
 from happy_predictions.predictor.image_generation import PredictionParams
 from happy_predictions.predictor.predictor import Predictor
 from happy_predictions.storage.models import DatabaseUser
@@ -90,7 +94,9 @@ async def generate_prediction(
             image = predictor.get_image(PredictionParams(text_id, background))
     except (ValueError, MissingAsset):
         with TimeCounter.start() as time_counter:
-            image = predictor.gen_custom_image(background, message.text)
+            image = predictor.gen_custom_image(
+                background, convert_at_sign(message.text)
+            )
 
     await update.effective_chat.send_photo(image)
     await update.effective_chat.send_message(
