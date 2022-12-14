@@ -8,7 +8,8 @@ class Storage(Protocol):
     async def find_user(self, user_id: int) -> Optional[DatabaseUser]:
         ...
 
-    async def new_user(
-        self, user_id: int, prediction_id: int, prediction_background: str
-    ) -> None:
+    async def new_user(self, user: DatabaseUser) -> None:
+        ...
+
+    async def admin_select_background(self, admin_id: int, background: str):
         ...

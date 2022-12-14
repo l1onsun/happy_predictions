@@ -1,9 +1,15 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+
+from happy_predictions.storage.storage import Storage
 
 
 @dataclass
 class AdminService:
-    selected_background_admin_id: dict[int, str] = field(default_factory=dict)
+    storage: Storage
 
-    def get_selected_background(self, admin_user_id: int) -> str | None:
-        return self.selected_background_admin_id.get(admin_user_id)
+    async def get_selected_background(self, admin_user_id: int) -> str | None:
+        user = await self.storage.find_user(admin_user_id)
+        return user.admin_selected_background if user else None
+
+    async def choose_background(self, admin_id: int, background_name: str) -> None:
+        await self.storage.admin_select_background(admin_id, background_name)

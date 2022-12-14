@@ -13,10 +13,15 @@ class Predictor:
     image_gen: ImageGenerator
     assets: AssetsBox
 
-    def get_prediction(self, params: PredictionParams) -> io.BytesIO:
+    def get_image(self, params: PredictionParams) -> io.BytesIO:
         bytes_io = self.image_gen.gen_image_cached(params)
         bytes_io.seek(0)
         return bytes_io
+
+    def gen_custom_image(self, background_name: str, text: str) -> io.BytesIO:
+        return self.image_gen.gen_custom_image(
+            self.assets.get_background(background_name), text
+        )
 
     def get_random_prediction_params(self) -> PredictionParams:
         return PredictionParams(

@@ -118,5 +118,5 @@ def build_assets_box() -> AssetsBox:
 
 
 @service_factories.add
-def build_admin_service() -> AdminService:
-    return AdminService()
+def build_admin_service(storage: Storage) -> AdminService:
+    return AdminService(storage)

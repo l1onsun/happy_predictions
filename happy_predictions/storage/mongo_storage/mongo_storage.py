@@ -5,34 +5,30 @@ from typing import Optional
 
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 
-from happy_predictions.storage.models import DatabaseUser, SchemeConfig
+from happy_predictions.storage.models import DatabaseUser
+from happy_predictions.storage.storage import Storage
 
 
 @dataclass
-class MongoStorage:
+class MongoStorage(Storage):
     db: AsyncIOMotorDatabase
+
+    def _user_coll(self):
+        return self.db["user"]
 
     @classmethod
     def from_mongo_uri(cls, mongo_uri: str):
         return cls(AsyncIOMotorClient(mongo_uri).get_default_database())
 
     async def find_user(self, user_id: int) -> Optional[DatabaseUser]:
-        users = self.db[SchemeConfig.user]
-        user: Optional[dict] = await users.find_one({SchemeConfig.user_unique: user_id})
+        user: dict | None = await self._user_coll().find_one({"id": user_id})
 
-        if user is None:
-            return None
-        return DatabaseUser(**user)
+        return DatabaseUser(**user) if user is not None else None
 
-    async def new_user(
-        self, user_id: int, prediction_id: int, prediction_background: str
-    ) -> None:
-        users = self.db[SchemeConfig.user]
-        user = DatabaseUser(
-            **{
-                SchemeConfig.user_unique: user_id,
-                SchemeConfig.user_prediction_idx: prediction_id,
-                SchemeConfig.user_prediction_background: prediction_background,
-            }
+    async def new_user(self, user: DatabaseUser) -> None:
+        await self._user_coll().insert_one(user.dict(by_alias=True))
+
+    async def admin_select_background(self, admin_id: int, background: str):
+        await self._user_coll().update_one(
+            {"_id": admin_id}, {"$set": {"admin_selected_background": background}}
         )
-        await users.insert_one(user.dict(by_alias=True))

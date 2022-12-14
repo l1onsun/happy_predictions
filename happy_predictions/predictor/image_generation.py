@@ -29,13 +29,17 @@ class ImageGenerator:
         default_factory=lambda: LruCacheDict(max_size=10)
     )
 
-    def gen_image(self, prediction_params: PredictionParams) -> io.BytesIO:
-        background = self.assets.get_background(prediction_params.background_name)
-        font_size = background.width // FONT_SIZE_TO_WIDTH_RATIO
+    def gen_image_with_params(self, prediction_params: PredictionParams) -> io.BytesIO:
+        return self.gen_custom_image(
+            background=self.assets.get_background(prediction_params.background_name),
+            text=self.assets.get_prediction_text(prediction_params.text_id),
+        )
 
+    def gen_custom_image(self, background: Image, text: str) -> io.BytesIO:
+        font_size = background.width // FONT_SIZE_TO_WIDTH_RATIO
         return self._to_bytes(
             TextWithOutlineDrawer(
-                text=self.assets.get_prediction_text(prediction_params.text_id),
+                text=text,
                 background=background,
                 font=self.assets.get_font(font_size),
                 font_size=font_size,
@@ -43,8 +47,9 @@ class ImageGenerator:
         )
 
     def gen_image_cached(self, prediction_params: PredictionParams) -> io.BytesIO:
+        # todo: cache and all PredictionParams logic should be moved to Predictor
         return self.cache.get(prediction_params) or self.cache.put(
-            prediction_params, self.gen_image(prediction_params)
+            prediction_params, self.gen_image_with_params(prediction_params)
         )
 
     @staticmethod

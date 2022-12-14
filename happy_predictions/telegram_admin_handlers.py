@@ -1,33 +1,42 @@
-import time
-
 import structlog
 
 from happy_predictions.admin_service import AdminService
 from happy_predictions.predictor.assets_manager import AssetsBox, MissingAsset
 from happy_predictions.predictor.image_generation import PredictionParams
 from happy_predictions.predictor.predictor import Predictor
+from happy_predictions.storage.models import DatabaseUser
+from happy_predictions.storage.storage import Storage
 from happy_predictions.telegram.fix_telegram_types import Update
 from happy_predictions.telegram.provided_handlers import ProvidedHandlers
 from happy_predictions.telegram_main_handlers import keyboard
+from happy_predictions.utils import TimeCounter
 
 log = structlog.get_logger()
 admin_handlers = ProvidedHandlers()
 
 
 @admin_handlers.add_start_handler
-async def on_start(update: Update):
-    if not update.effective_chat:
-        raise RuntimeError("No effective chat")
+async def on_start(update: Update, storage: Storage, predictor: Predictor):
+    if not (user := update.effective_user) or not update.effective_chat:
+        log.warning(
+            f"got message without effective_chat or effective_user {update.update_id=}"
+        )
+        return
+
+    if not await storage.find_user(user.id):
+        await storage.new_user(
+            DatabaseUser.new(user, predictor.get_random_prediction_params())
+        )
 
     await update.effective_chat.send_photo(
         "https://kartinki-dlya-srisovki.ru/wp-content"
         "/uploads/2019/05/kartinki-kot-pushin-1.png"
     )
     await update.effective_chat.send_message(
-        "Мяу... Это админский канал, для проверки генерации картинок!",
+        "Мяу... Это админский канал, для проверки генерации картинок!\n"
+        "Чтобы проверить предсказание, напиши в чат его номер или текст",
         reply_markup=keyboard(
-            {"Как сгенерить предсказание?": "how_to"},
-            {"Выбор background-а": "list_backgrounds"},
+            {"Или сначала выбери фон": "list_backgrounds"},
         ),
     )
 
@@ -37,16 +46,9 @@ async def make_prediction_callback(
     update: Update, assets: AssetsBox, admin_service: AdminService
 ):
     match update.callback_query.data:
-        case "how_to":
-            await update.effective_chat.send_message(
-                "Напиши через пробел backround и номер текста\nПример: b1.jpg 0\n",
-                reply_markup=keyboard(
-                    {"Или сначала выбери background": "list_backgrounds"}
-                ),
-            )
         case "list_backgrounds":
             await update.effective_chat.send_message(
-                "Выбери background:",
+                "Выбери фон:",
                 reply_markup=keyboard(
                     *[
                         {backround: backround}
@@ -55,40 +57,13 @@ async def make_prediction_callback(
                 ),
             )
         case background:
-            admin_service.selected_background_admin_id[
-                update.effective_user.id
-            ] = background
+            await admin_service.choose_background(update.effective_user.id, background)
+            max_text_id = len(assets.list_available_text_ids()) - 1
             await update.effective_chat.send_message(
-                f"Выбран background: {background}\n"
-                "Теперь напиши в чат номер предсказания\n"
-                f"От 0 до {len(assets.list_available_text_ids()) - 1}"
+                f"Выбран фон: {background}\n"
+                "Теперь напиши номер или текст предсказания"
+                f"(доступные номера: от 0 до {max_text_id})"
             )
-
-
-def parse_prediction_params(
-    text: str, selected_background: str | None
-) -> tuple[PredictionParams | None, str | None]:
-    split = text.split(" ")
-
-    error = None, (
-        "Неправильный формат. Пример: b1.jpg 0"
-        if selected_background is None
-        else "Неправильный формат. Введи номер предсказания"
-    )
-
-    if len(split) == 1 and selected_background is not None:
-        prediction_id_str = split[0]
-    elif len(split) == 2:
-        selected_background, prediction_id_str = split
-    else:
-        return error
-
-    try:
-        prediction_id = int(prediction_id_str)
-    except ValueError:
-        return error
-
-    return PredictionParams(prediction_id, selected_background), None
 
 
 @admin_handlers.add_message_handler
@@ -96,27 +71,29 @@ async def generate_prediction(
     update: Update, predictor: Predictor, admin_service: AdminService
 ):
     if not (update.effective_chat or update.effective_user):
-        log.warning(f"got message without effective_chat {update.update_id=}")
+        log.warning(
+            f"got message without effective_chat or effective_user {update.update_id=}"
+        )
         return
     if not (message := update.message or update.edited_message):
         log.warning(f"got message without message {update.update_id=}")
         return
 
-    prediction_params, error = parse_prediction_params(
-        message.text, admin_service.get_selected_background(update.effective_user.id)
+    background = (
+        await admin_service.get_selected_background(update.effective_user.id)
+        or predictor.assets.list_available_backgrounds()[0]
     )
-    if not prediction_params:
-        await update.effective_chat.send_message(error)
-        return
 
     try:
-        start = time.time()
-        image = predictor.get_prediction(prediction_params)
-        generation_seconds = time.time() - start
-    except MissingAsset as e:
-        await update.effective_chat.send_message(f"Не найдено предсказание\n{e}")
-        return
+        text_id = int(message.text)
+        with TimeCounter.start() as time_counter:
+            image = predictor.get_image(PredictionParams(text_id, background))
+    except (ValueError, MissingAsset):
+        with TimeCounter.start() as time_counter:
+            image = predictor.gen_custom_image(background, message.text)
+
     await update.effective_chat.send_photo(image)
     await update.effective_chat.send_message(
-        f"image generation time: {generation_seconds * 1000} ms"
+        f"image generation time: {time_counter.milliseconds_passed()} ms",
+        reply_markup=keyboard({"Сменить фон": "list_backgrounds"}),
     )
