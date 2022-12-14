@@ -21,7 +21,7 @@ class MongoStorage(Storage):
         return cls(AsyncIOMotorClient(mongo_uri).get_default_database())
 
     async def find_user(self, user_id: int) -> Optional[DatabaseUser]:
-        user: dict | None = await self._user_coll().find_one({"id": user_id})
+        user: dict | None = await self._user_coll().find_one({"_id": user_id})
 
         return DatabaseUser(**user) if user is not None else None
 
