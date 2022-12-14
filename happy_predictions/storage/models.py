@@ -9,16 +9,16 @@ from happy_predictions.predictor.image_generation import PredictionParams
 @dataclass
 class TelegramUser:
     is_bot: bool
-    can_read_all_group_messages: bool | None
-    username: str | None
     first_name: str
-    last_name: str | None
-    can_join_groups: bool | None
-    supports_inline_queries: bool | None
     id: int
-    language_code: str | None
-    is_premium: bool | None
-    added_to_attachment_menu: bool | None
+    can_read_all_group_messages: bool | None = None
+    username: str | None = None
+    last_name: str | None = None
+    can_join_groups: bool | None = None
+    supports_inline_queries: bool | None = None
+    language_code: str | None = None
+    is_premium: bool | None = None
+    added_to_attachment_menu: bool | None = None
 
     @classmethod
     def from_tg_user(cls, user: tg.User):
