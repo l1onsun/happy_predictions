@@ -35,7 +35,7 @@ class DatabaseUser(BaseModel):
     @classmethod
     def new(cls, tg_user: tg.User, prediction_params: PredictionParams):
         return cls(
-            mongo_id=tg_user.id,
+            _id=tg_user.id,
             prediction=prediction_params,
             telegram_user=TelegramUser.from_tg_user(tg_user),
             admin_selected_background=None,
