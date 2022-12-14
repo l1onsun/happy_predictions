@@ -19,9 +19,11 @@ class Predictor:
         return bytes_io
 
     def gen_custom_image(self, background_name: str, text: str) -> io.BytesIO:
-        return self.image_gen.gen_custom_image(
+        bytes_io = self.image_gen.gen_custom_image(
             self.assets.get_background(background_name), text
         )
+        bytes_io.seek(0)
+        return bytes_io
 
     def get_random_prediction_params(self) -> PredictionParams:
         return PredictionParams(
