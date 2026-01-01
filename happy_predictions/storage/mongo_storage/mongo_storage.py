@@ -28,6 +28,21 @@ class MongoStorage(Storage):
     async def new_user(self, user: DatabaseUser) -> None:
         await self._user_coll().insert_one(user.to_bson())
 
+    async def full_update_user(self, user: DatabaseUser) -> None:
+        await self._user_coll().update_one(
+            {"_id": user.mongo_id},
+            {"$set": user.to_bson()},
+        )
+
+    # TODO:
+    # async def new_user(self, user: DatabaseUser) -> None:
+    # user_data = user.to_bson()
+    # await self._user_coll().update_one(
+    #     {"_id": user.id},
+    #     {"$set": user_data},  # Обновляем только переданные поля
+    #     upsert=True
+    # )
+
     async def admin_select_background(self, admin_id: int, background: str):
         await self._user_coll().update_one(
             {"_id": admin_id}, {"$set": {"admin_selected_background": background}}

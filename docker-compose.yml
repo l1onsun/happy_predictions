@@ -18,9 +18,12 @@ services:
 
 
   happy_mongo:
+    restart: unless-stopped
     image: 'mongo:4'
     networks:
       - docker_network
+    ports:
+      - 27017:27017
 
 networks:
   docker_network:

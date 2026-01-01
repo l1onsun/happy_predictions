@@ -29,7 +29,7 @@ async def on_start(update: Update, storage: Storage, predictor: Predictor):
 
     if not await storage.find_user(user.id):
         await storage.new_user(
-            DatabaseUser.new(user, predictor.get_random_prediction_params())
+            DatabaseUser.new(user, prediction_2026=predictor.get_random_prediction_params())
         )
 
     await update.effective_chat.send_photo(

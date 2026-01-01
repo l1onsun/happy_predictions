@@ -28,21 +28,24 @@ class TelegramUser:
 
 class DatabaseUser(BaseModel):
     mongo_id: int = Field(..., alias="_id")
-    prediction: PredictionParams
+    prediction: PredictionParams | None = None
+    prediction_2026: PredictionParams | None = None
     telegram_user: TelegramUser
     admin_selected_background: str | None
 
     @classmethod
-    def new(cls, tg_user: tg.User, prediction_params: PredictionParams):
+    def new(cls, tg_user: tg.User, *, old_prediction: PredictionParams | None = None, prediction_2026: PredictionParams | None = None):
         return cls(
             _id=tg_user.id,
-            prediction=prediction_params,
+            prediction=old_prediction,
+            prediction_2026=prediction_2026,
             telegram_user=TelegramUser.from_tg_user(tg_user),
             admin_selected_background=None,
         )
 
     def to_bson(self) -> JsonType:
-        return self.dict(by_alias=True, exclude={"telegram_user", "prediction"}) | {
+        return self.dict(by_alias=True, exclude={"telegram_user", "prediction", "prediction_2026"}) | {
             "telegram_user": asdict(self.telegram_user),
-            "prediction": asdict(self.prediction),
+            "prediction": asdict(self.prediction) if self.prediction else None,
+            "prediction_2026": asdict(self.prediction_2026) if self.prediction_2026 else None,
         }

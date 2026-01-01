@@ -13,3 +13,6 @@ class Storage(Protocol):
 
     async def admin_select_background(self, admin_id: int, background: str):
         ...
+
+    async def full_update_user(self, user: DatabaseUser) -> None:
+        ...
